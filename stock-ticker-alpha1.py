@@ -1,31 +1,24 @@
 #!/usr/bin/env python
-import yfinance as yf
+# This is basically the pimoroni rainbow-text example but mashed up to show the stock prices 
+# For details of that script go here: https://github.com/pimoroni/unicorn-hat-hd
+
 import yfinance as yf
 from pprint import pprint
-
-#import matplotlib.pyplot as plt
-
-# pip install "plotly==4.5.2" to get graphics_objects error to go away
-
 import colorsys
 import time
 from sys import exit
-
 import pandas as pd
-#from pandas_datareader import data as web
-
 import os
-
+try:
+    import unicornhathd
+except ImportError:
+    exit('This script requires the unicornhathd module\nInstall with: sudo pip install unicornhat, more details here: https://github.com/pimoroni/unicorn-hat')
 
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
     exit('This script requires the pillow module\nInstall with: sudo pip install pillow')
 
-try:
-    import unicornhathd
-except ImportError:
-    exit('This script requires the unicornhathd module\nInstall with: sudo pip install unicornhat, more details here: https://github.com/pimoroni/unicorn-hat')
 
 unicornhathd.rotation(180)
 unicornhathd.brightness(0.6)
@@ -44,10 +37,9 @@ while True:
 
 
     
-   # fp = yf.download(tickers='GME', period='1d', interval='1m')
     count = count + 1; 
     if(count > cacheUpdateLoop):
-        print "Updating ticker cache" 
+        print ("Updating ticker cache" )
         toggle = True
         count = 1
 
@@ -61,10 +53,6 @@ while True:
         TEXT = "G M E"
         TEXT2 =  str(int(last_quote))
 
-        #ticker_amc = yf.Ticker('AMC')
-        #data = ticker_amc.history()
-        #last_quote = (round(data.tail(1)['Close'].iloc[0],2))
-        #TEXT2 = "AMC: $ " + str((last_quote))
         toggle= not toggle
 
     elif tickerIdx == 1:
@@ -197,7 +185,7 @@ while True:
                 # Finally we colour in our finished pixel on Unicorn HAT HD
                 unicornhathd.set_pixel(width - 1 - x, y, r, g, b)
 
-        # Finally, for each step in our scroll, we show the result on Unicorn HAT HD
+        # Set a triangle up or down, red or green if close is higher/lower than open 
         if(last_open < last_quote): 
             unicornhathd.set_pixel(0 , 0, 0, 255, 0)
             unicornhathd.set_pixel(1 , 0, 0, 255, 0)
@@ -206,12 +194,13 @@ while True:
             unicornhathd.set_pixel(0 , 0, 255, 0, 0)
             unicornhathd.set_pixel(1 , 1, 255, 0, 0)
             unicornhathd.set_pixel(0 , 1, 255, 0, 0)
+        # Finally, for each step in our scroll, we show the result on Unicorn HAT HD
         unicornhathd.show()
 
         # And sleep for a little bit, so it doesn't scroll too quickly!
         time.sleep(0.05)
 
     time.sleep(0.02)
-    #unicornhathd.off()
+    unicornhathd.off()
 unicornhathd.off()
 
